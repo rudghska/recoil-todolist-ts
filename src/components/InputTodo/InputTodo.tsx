@@ -1,17 +1,18 @@
-import React, { useContext, useRef } from 'react';
-import { Todos } from '../../types/todos';
-
+import React from 'react';
+import { useSetRecoilState } from 'recoil';
 import styles from './inputTodo.module.css';
+import { Todos } from '../../types/todos';
+import { todoState } from '../../atoms/todoAtom';
 
 const InputTodo = () => {
-  const inputRef = useRef<HTMLInputElement>(null);
-  const formRef = useRef<HTMLFormElement>(null);
+  const todoHandler = useSetRecoilState<Todos[]>(todoState);
 
-  const onTodoSubmit = (e: React.FormEvent) => {
+  const onTodoSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
-    if (!inputRef.current!.value) {
-      inputRef.current!.focus();
+    const input = (e.target as HTMLFormElement).children[0] as HTMLInputElement;
+    // e.target 은 다른 요소가 될수도 있기 때문에 타입캐스팅 해줘야 한다고 함
+    if (input.value === '') {
+      input.focus();
       return;
     }
 
@@ -19,14 +20,13 @@ const InputTodo = () => {
       return;
     }
 
-    const todoName: string = inputRef.current!.value;
-
-    formRef.current!.reset();
-    inputRef.current!.focus();
+    todoHandler(todos => [...todos, { todoName: input.value, id: Date.now(), isDone: false }]);
+    (e.target as HTMLFormElement).reset();
+    input.focus();
   };
   return (
-    <form className={styles.form} ref={formRef} onSubmit={onTodoSubmit}>
-      <input className={styles.input} ref={inputRef} type="text" placeholder="Todo...." />
+    <form className={styles.form} onSubmit={onTodoSubmit}>
+      <input className={styles.input} type="text" placeholder="Todo...." />
       <button className={styles.submit} type="submit">
         할 일 추가
       </button>
