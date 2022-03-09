@@ -1,8 +1,5 @@
-import React from 'react';
 import styles from './header.module.css';
 import { useRecoilValue } from 'recoil';
-import { Todos } from '../../types/todos';
-
 import { todoCountSelector } from '../../atoms/todoAtom';
 
 const Header = () => {
